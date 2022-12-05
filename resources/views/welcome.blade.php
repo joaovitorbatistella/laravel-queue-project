@@ -34,6 +34,36 @@
             .line-left {
                 border-left: 1px solid;
             }
+            .th {
+                font-size:18px;
+            }
+            .td {
+                font-size:18px;
+                padding: 0px 8px; 
+                border-top: 1px solid black;
+                border-right: 1px solid black;
+                border-bottom: 1px solid black;
+            }
+            .alert {
+                position: relative;
+                padding: 0.75rem 1.25rem;
+                margin-bottom: 1rem;
+                border: 1px solid transparent;
+                border-radius: 0.25rem;
+            }
+            .alert-success {
+                color: #1d643b;
+                background-color: #d7f3e3;
+                border-color: #c7eed8;
+            }
+
+            .alert-success hr {
+                border-top-color: #b3e8ca;
+            }
+
+            .alert-success .alert-link {
+                color: #123c24;
+            }
         </style>
 
         <style>
@@ -41,8 +71,19 @@
                 font-family: 'Nunito', sans-serif;
             }
         </style>
+
+
     </head>
     <body>
+    @if(session()->has('message'))
+        <div id="alert" class="alert alert-success">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>{{session('message')}}</p>
+                </div>
+            </div>
+        </div>
+    @endif
         <div class="row">
             <div class="col col-md-4">
                 <form method="POST" action="/subscriber/save" enctype="multipart/form-data">
@@ -55,8 +96,34 @@
                 </form>
             </div>
             <div class="col-md-8 line-left">
-
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="th" scope="col">#</th>
+                            <th class="th" scope="col">Nome</th>
+                            <th class="th" scope="col">Email</th>
+                            <th class="th" scope="col">Criado em</th>
+                            <th class="th" scope="col">Atualizado em</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($result as $row)
+                        <tr>
+                            <th class="td" scope="row">{{$row->id}}</th>
+                            <td class="td">{{$row->name}}</td>
+                            <td class="td">{{$row->email}}</td>
+                            <td class="td">{{$row->created_at}}</td>
+                            <td class="td">{{$row->updated_at}}</td>
+                        </tr>
+                    @endforeach
+                    
+                    
+                    </tbody>
+                </table>
             </div>
         </div>
     </body>
 </html>
+<script>
+    $("#alert").fadeOut(8000);
+</script>   

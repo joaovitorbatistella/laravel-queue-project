@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subscriber;
+use App\Jobs\ProcessSubscriber;
+
 use Illuminate\Http\Request;
 
 class SubscriberController extends Controller
@@ -13,7 +16,8 @@ class SubscriberController extends Controller
      */
     public function index()
     {
-        //
+        $result = Subscriber::all();
+        return view('welcome', compact('result'));
     }
 
     /**
@@ -47,7 +51,7 @@ class SubscriberController extends Controller
             $i=0;
             $el = array_reduce($headers, function($object, $header) use($headers, $delimited, &$i) {
                 if(count($delimited)-1 === count($headers)-1) {
-                    $object[$header] = $delimited[$i];
+                    $object[$header] = trim($delimited[$i], '"');
                 }
                 if(count($headers)-1 === $i) {
                     $i=0;
@@ -60,6 +64,22 @@ class SubscriberController extends Controller
         }, $rows);
 
         $arr = array_filter($arr);
+        /*
+            Aqui começa a lógica da fila
+        */
+        // foreach ($arr as $key => $sub) {
+        //     ProcessSubscriber::dispatch($sub)->onQueue('importSubscribersQueue');
+        // }
+
+        /*
+            Batches
+        */
+        $subArrs = array_chunk($arr, count($arr)%2=== 0 ? count($arr)/2 : (count($arr)-1)/2);
+
+        (new Subscriber)->handleBatch($subArrs[0]);    
+        (new Subscriber)->handleBatch($subArrs[1]);    
+        
+        return redirect()->back()->with('message', 'Lista de subscribers enviada para fila!');
     }
 
     /**

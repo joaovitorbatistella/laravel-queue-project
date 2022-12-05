@@ -13,10 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/', 'App\Http\Controllers\SubscriberController@index')->name('subscriber-index');    
 
 Route::group(['prefix' => 'subscriber'], function(){
     Route::post('save', 'App\Http\Controllers\SubscriberController@store')->name('subscriber-store');    
